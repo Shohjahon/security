@@ -2,8 +2,8 @@ package uz.playground.security.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -13,9 +13,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import uz.playground.security.security.CustomAuthenticationEntryPoint;
 import uz.playground.security.security.filter.JwtAuthenticationFilter;
 import uz.playground.security.service.CustomUserDetailService;
 import javax.servlet.Filter;
@@ -27,15 +27,6 @@ import javax.servlet.Filter;
         prePostEnabled = true
 )
 public class SecurityConfig {
-    private final CustomUserDetailService customUserDetailService;
-    private final CustomAuthenticationEntryPoint authenticationEntryPoint;
-
-    public SecurityConfig(CustomUserDetailService customUserDetailService,
-                          CustomAuthenticationEntryPoint authenticationEntryPoint) {
-        this.customUserDetailService = customUserDetailService;
-        this.authenticationEntryPoint = authenticationEntryPoint;
-    }
-
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -44,8 +35,8 @@ public class SecurityConfig {
                 .and()
                 .csrf().disable()
                 .exceptionHandling()
-                .authenticationEntryPoint(authenticationEntryPoint)
                 .and()
+                .authenticationProvider(authenticationProvider())
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
@@ -76,7 +67,7 @@ public class SecurityConfig {
 
     @Bean
     public UserDetailsService userDetailsService(){
-        return customUserDetailService;
+        return new CustomUserDetailService();
     }
 
     @Bean(name = "passwordEncoder")
@@ -94,4 +85,11 @@ public class SecurityConfig {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
+    @Bean
+    public DaoAuthenticationProvider authenticationProvider(){
+        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
+        authenticationProvider.setUserDetailsService(userDetailsService());
+        authenticationProvider.setPasswordEncoder(passwordEncoder());
+        return authenticationProvider;
+    }
 }

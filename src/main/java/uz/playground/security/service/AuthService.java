@@ -35,7 +35,8 @@ public class AuthService {
                        ResponseHelper responseHelper,
                        @Qualifier("passwordEncoder") PasswordEncoder passwordEncoder,
                        RoleRepository roleRepository,
-                       AuthenticationManager authenticationManager, JwtProvider jwtProvider) {
+                       AuthenticationManager authenticationManager,
+                       JwtProvider jwtProvider) {
         this.userRepository = userRepository;
         this.responseHelper = responseHelper;
         this.passwordEncoder = passwordEncoder;
@@ -46,8 +47,7 @@ public class AuthService {
 
     public ResponseEntity<?> loginUser(LoginDto request){
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getUsernameOrEmail(),
-                        request.getPassword()));
+                new UsernamePasswordAuthenticationToken(request.getUsernameOrEmail(), request.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         return responseHelper.prepareResponse(jwtProvider.generateToken(authentication));
     }

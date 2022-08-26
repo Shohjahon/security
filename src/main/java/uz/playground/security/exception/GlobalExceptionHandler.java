@@ -3,6 +3,7 @@ package uz.playground.security.exception;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,9 +34,19 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<?> handleGenericException(final Exception e, final WebRequest webRequest, final HttpServletRequest request) {
+    public ResponseEntity<?> handleGenericException(final Exception e,
+                                                    final WebRequest webRequest,
+                                                    final HttpServletRequest request) {
         logger.error(getStackTrace(e), e.getMessage());
         return responseHelper.internalServerError();
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<?> handleBadCredentialsException(final Exception e,
+                                                    final WebRequest webRequest,
+                                                    final HttpServletRequest request) {
+        logger.error(getStackTrace(e), e.getMessage());
+        return responseHelper.incorrectPassword();
     }
 
     private String getStackTrace(Exception e) {
