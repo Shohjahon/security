@@ -8,6 +8,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import uz.playground.security.constant.Lang;
 import uz.playground.security.constant.RoleName;
 import uz.playground.security.dto.LoginDto;
@@ -21,6 +22,8 @@ import uz.playground.security.security.JwtProvider;
 
 import java.util.Collections;
 import java.util.Optional;
+
+import static uz.playground.security.dto.ResponseData.response;
 
 @Service
 public class AuthService {
@@ -45,11 +48,12 @@ public class AuthService {
         this.jwtProvider = jwtProvider;
     }
 
+    @Transactional
     public ResponseEntity<?> loginUser(LoginDto request){
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getUsernameOrEmail(), request.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        return responseHelper.prepareResponse(jwtProvider.generateToken(authentication));
+        return response(jwtProvider.generateToken(authentication));
     }
 
     public ResponseEntity<?> registerUser(SignupDto request){
@@ -70,7 +74,6 @@ public class AuthService {
         }
         user.setRoles(Collections.singleton(userRole.get()));
         userRepository.save(user);
-        return responseHelper.prepareResponse(String.format("%s have successfully registered in the system",
-                user.getName()));
+        return response(String.format("%s have successfully registered in the system", user.getName()));
     }
 }

@@ -1,5 +1,6 @@
 package uz.playground.security.helper;
 
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -18,7 +19,7 @@ public class ResponseHelper {
 
     private final MessageService messageService;
 
-    public ResponseHelper(MessageService messageService) {
+    public ResponseHelper(@Lazy MessageService messageService) {
         this.messageService = messageService;
     }
 

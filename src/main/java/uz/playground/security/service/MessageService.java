@@ -1,10 +1,13 @@
 package uz.playground.security.service;
 
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uz.playground.security.constant.Lang;
 import uz.playground.security.constant.MessageKey;
+import uz.playground.security.dto.MessageDto;
 import uz.playground.security.entity.Message;
+import uz.playground.security.helper.ResponseHelper;
 import uz.playground.security.helper.SecurityHelper;
 import uz.playground.security.repository.MessageRepository;
 import uz.playground.security.security.UserPrincipal;
@@ -18,9 +21,12 @@ import java.util.Optional;
 @Service
 public class MessageService {
     private final MessageRepository messageRepository;
+    private final ResponseHelper responseHelper;
 
-    public MessageService(MessageRepository messageRepository) {
+    public MessageService(MessageRepository messageRepository,
+                          ResponseHelper responseHelper) {
         this.messageRepository = messageRepository;
+        this.responseHelper = responseHelper;
     }
 
     @PostConstruct
@@ -80,4 +86,35 @@ public class MessageService {
                 .orElse(key);
     }
 
+    public ResponseEntity<?> createMessage(MessageDto messageDto){
+        Optional<Message> messageOpt = messageRepository.findByKeyAndLang(messageDto.getKey(), messageDto.getLang());
+        if (messageOpt.isPresent()){
+            return responseHelper.invalidData();
+        }
+        Message message = new Message(messageDto.getKey(), messageDto.getLang(), messageDto.getMessage());
+        messageRepository.save(message);
+        return responseHelper.success();
+    }
+
+    public ResponseEntity<?> editMessage(Message message){
+        Optional<Message> messageOpt = messageRepository.findByKeyAndLang(message.getKey(), message.getLang());
+        if (messageOpt.isEmpty()){
+            return responseHelper.noDataFound();
+        }
+        Message msg = messageOpt.get();
+        msg.setKey(message.getKey());
+        msg.setLang(message.getLang());
+        msg.setMessage(message.getMessage());
+        messageRepository.save(msg);
+        return responseHelper.success();
+    }
+
+    public ResponseEntity<?> deleteMessage(Long messageId){
+        Optional<Message> message = messageRepository.findById(messageId);
+        if (message.isEmpty()){
+            return responseHelper.noDataFound();
+        }
+        messageRepository.delete(message.get());
+        return responseHelper.success();
+    }
 }

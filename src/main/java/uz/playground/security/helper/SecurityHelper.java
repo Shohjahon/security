@@ -13,7 +13,7 @@ public class SecurityHelper {
 
     public static UserPrincipal getUser(){
         Authentication authentication =  SecurityContextHolder.getContext().getAuthentication();
-        return isAnonymous(authentication) ?  null : (UserPrincipal) authentication.getPrincipal();
+        return (Objects.isNull(authentication) || isAnonymous(authentication)) ?  null : (UserPrincipal) authentication.getPrincipal();
     }
 
     private static boolean isAnonymous(Authentication authentication){

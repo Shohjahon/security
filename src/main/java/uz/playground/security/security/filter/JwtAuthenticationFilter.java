@@ -22,10 +22,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
-    @Autowired
-    private JwtProvider jwtProvider;
-    @Autowired
-    private CustomUserDetailService userDetailService;
+    private final JwtProvider jwtProvider;
+    private final CustomUserDetailService userDetailService;
+
+    public JwtAuthenticationFilter(JwtProvider jwtProvider, CustomUserDetailService customUserDetailService) {
+        this.jwtProvider = jwtProvider;
+        this.userDetailService = customUserDetailService;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -52,10 +55,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private String getJwtFromRequest(HttpServletRequest request){
-        String bearerToken = request.getHeader("Authorization");
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer")){
-            return bearerToken.substring(7);
-        }
-        return null;
+        return request.getHeader("Authorization");
     }
 }
