@@ -2,7 +2,7 @@ package uz.playground.security.exception;
 
 import org.springframework.http.ResponseEntity;
 import uz.playground.security.dto.ResponseData;
-import uz.playground.security.dto.ResponseMessage;
+import uz.playground.security.dto.ResponseDto;
 
 import java.util.Objects;
 
@@ -14,7 +14,7 @@ public class CustomException extends RuntimeException{
     }
 
     public CustomException(ResponseEntity<?> response){
-        super(Objects.requireNonNull((ResponseData<?>) response.getBody()).getErrorMessage());
+        super(Objects.requireNonNull((ResponseData<?>) response.getBody()).getMessage());
         this.response = response;
     }
 
@@ -22,7 +22,7 @@ public class CustomException extends RuntimeException{
         return response;
     }
 
-    public void setResponse(ResponseEntity<ResponseData<ResponseMessage>> response){
+    public void setResponse(ResponseEntity<ResponseData<ResponseDto>> response){
         this.response = response;
     }
 }

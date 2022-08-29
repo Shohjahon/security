@@ -8,15 +8,16 @@ import uz.playground.security.constant.MessageKey;
 import uz.playground.security.dto.MessageDto;
 import uz.playground.security.entity.Message;
 import uz.playground.security.helper.ResponseHelper;
-import uz.playground.security.helper.SecurityHelper;
 import uz.playground.security.repository.MessageRepository;
 import uz.playground.security.security.UserPrincipal;
 
 import javax.annotation.PostConstruct;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
+
+import static uz.playground.security.constant.Lang.UZ;
+import static uz.playground.security.helper.SecurityHelper.getUser;
 
 @Service
 public class MessageService {
@@ -74,13 +75,29 @@ public class MessageService {
             messageList.add(new Message(MessageKey.EMAIL_EXISTS, Lang.UZ, "Email is already taken!"));
             messageList.add(new Message(MessageKey.EMAIL_EXISTS, Lang.RU, "Email is already taken!"));
 
+            messageList.add(new Message("valid.not.blank.signup.name", Lang.EN, "Full name is empty!"));
+            messageList.add(new Message("valid.not.blank.signup.name", Lang.UZ, "Ism sharifingizni kiriting!"));
+            messageList.add(new Message("valid.not.blank.signup.name", Lang.RU, "Full name is empty!"));
+
+            messageList.add(new Message("valid.not.blank.signup.username", Lang.EN, "Username is required"));
+            messageList.add(new Message("valid.not.blank.signup.username", Lang.UZ, "Foydalanuvchi nomini kiriting"));
+            messageList.add(new Message("valid.not.blank.signup.username", Lang.RU, "Username is required"));
+
+            messageList.add(new Message("valid.email.signup.email", Lang.EN, "Email is not valid"));
+            messageList.add(new Message("valid.email.signup.email", Lang.UZ, "Email manzil noto'g'ri"));
+            messageList.add(new Message("valid.email.signup.email", Lang.RU, "Email is not valid"));
+
+            messageList.add(new Message("valid.password.signup.password", Lang.EN, "Password is not valid!"));
+            messageList.add(new Message("valid.password.signup.password", Lang.UZ, "Parol noto'g'ri kiritilgan"));
+            messageList.add(new Message("valid.password.signup.password", Lang.RU, "Password is not valid"));
+
             messageRepository.saveAll(messageList);
         }
     }
 
     public String getMessage(String key){
-        UserPrincipal user = SecurityHelper.getUser();
-        Lang lang = Objects.isNull(user) ? Lang.UZ : user.getLang();
+        UserPrincipal user = getUser();
+        final var lang = Optional.ofNullable(user).map(UserPrincipal::getLang).orElse(UZ);
         return messageRepository.findByKeyAndLang(key, lang)
                 .map(Message::getMessage)
                 .orElse(key);

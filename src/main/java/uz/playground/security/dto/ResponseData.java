@@ -9,32 +9,32 @@ import org.springframework.http.ResponseEntity;
 public class ResponseData<T> {
     @JsonProperty("data")
     private T data;
-    @JsonProperty("errorMessage")
-    private String errorMessage;
+    @JsonProperty("message")
+    private String message;
     @JsonProperty("timestamp")
     private long timestamp;
 
     public ResponseData(T data) {
         this.data = data;
-        this.errorMessage = "";
+        this.message = "";
         this.timestamp = System.currentTimeMillis();
     }
 
-    public ResponseData(String successMessage) {
-        this.errorMessage = "";
-        this.data = (T) successMessage;
+    public ResponseData(String message) {
+        this.message = "";
+        this.data = (T) message;
         this.timestamp = System.currentTimeMillis();
     }
 
-    public ResponseData(T data, String errorMessage) {
+    public ResponseData(T data, String message) {
         this.data = data;
-        this.errorMessage = errorMessage;
+        this.message = message;
         this.timestamp = System.currentTimeMillis();
     }
 
 
     public ResponseData() {
-        this.errorMessage = "";
+        this.message = "";
         this.timestamp = System.currentTimeMillis();
     }
 
@@ -58,12 +58,12 @@ public class ResponseData<T> {
         this.data = data;
     }
 
-    public String getErrorMessage() {
-        return errorMessage;
+    public String getMessage() {
+        return message;
     }
 
-    public void setErrorMessage(String errorMessage) {
-        this.errorMessage = errorMessage;
+    public void setMessage(String errorMessage) {
+        this.message = errorMessage;
     }
 
     public long getTimestamp() {

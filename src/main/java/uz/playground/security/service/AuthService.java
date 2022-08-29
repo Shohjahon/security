@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uz.playground.security.constant.Lang;
 import uz.playground.security.constant.RoleName;
+import uz.playground.security.dto.JwtDto;
 import uz.playground.security.dto.LoginDto;
 import uz.playground.security.dto.SignupDto;
 import uz.playground.security.entity.Role;
@@ -22,8 +23,6 @@ import uz.playground.security.security.JwtProvider;
 
 import java.util.Collections;
 import java.util.Optional;
-
-import static uz.playground.security.dto.ResponseData.response;
 
 @Service
 public class AuthService {
@@ -53,12 +52,12 @@ public class AuthService {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getUsernameOrEmail(), request.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        return response(jwtProvider.generateToken(authentication));
+        return responseHelper.prepareResponse(new JwtDto(jwtProvider.generateToken(authentication)));
     }
 
     public ResponseEntity<?> registerUser(SignupDto request){
         if (userRepository.existsByUsername(request.getUsername())){
-            responseHelper.usernameExists();
+            return responseHelper.usernameExists();
         }
 
         if (userRepository.existsByEmail(request.getEmail())){
@@ -74,6 +73,6 @@ public class AuthService {
         }
         user.setRoles(Collections.singleton(userRole.get()));
         userRepository.save(user);
-        return response(String.format("%s have successfully registered in the system", user.getName()));
+        return responseHelper.success();
     }
 }

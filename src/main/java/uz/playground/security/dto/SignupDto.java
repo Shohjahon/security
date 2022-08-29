@@ -1,9 +1,18 @@
 package uz.playground.security.dto;
 
+import uz.playground.security.validation.annotation.Password;
+
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+
 public class SignupDto {
+    @NotBlank(message = "valid.not.blank.signup.name")
     private String name;
+    @NotBlank(message = "valid.not.blank.signup.username")
     private String username;
+    @Email(message = "valid.email.signup.email")
     private String email;
+    @Password(message = "valid.password.signup.password")
     private String password;
 
     public SignupDto(String name, String username, String email, String password) {

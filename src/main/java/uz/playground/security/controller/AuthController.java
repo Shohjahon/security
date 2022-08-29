@@ -10,6 +10,8 @@ import uz.playground.security.dto.LoginDto;
 import uz.playground.security.dto.SignupDto;
 import uz.playground.security.service.AuthService;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping(value = "/api/auth", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AuthController {
@@ -26,7 +28,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody SignupDto request){
+    public ResponseEntity<?> register(@Valid @RequestBody SignupDto request){
         return authService.registerUser(request);
     }
 }

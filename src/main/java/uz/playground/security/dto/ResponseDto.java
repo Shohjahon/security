@@ -1,13 +1,13 @@
 package uz.playground.security.dto;
 
-public class ResponseMessage {
+public class ResponseDto {
     private String message;
 
-    public ResponseMessage() {
+    public ResponseDto() {
         this.message = "";
     }
 
-    public ResponseMessage(String message) {
+    public ResponseDto(String message) {
         this.message = message;
     }
 
@@ -19,7 +19,7 @@ public class ResponseMessage {
         this.message = message;
     }
 
-    public static ResponseMessage message(final String message) {
-        return new ResponseMessage(message);
+    public static ResponseDto message(final String message) {
+        return new ResponseDto(message);
     }
 }
